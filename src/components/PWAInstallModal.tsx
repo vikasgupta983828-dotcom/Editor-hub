@@ -40,19 +40,29 @@ export const PWAInstallModal: React.FC<PWAInstallModalProps> = ({ open, onClose 
   const { language } = useApp();
   const { isInstallable, isInstalled, isIOS, install } = usePWAInstall();
   const [copiedManifest, setCopiedManifest] = useState(false);
+  const [copiedSite, setCopiedSite] = useState(false);
 
   if (!open) return null;
 
-  const manifestUrl =
-    typeof window !== 'undefined'
-      ? `${window.location.origin}/manifest.webmanifest`
-      : '/manifest.webmanifest';
+  const siteUrl =
+    typeof window !== 'undefined' ? window.location.origin : 'https://editinghub.app';
+  const manifestUrl = `${siteUrl}/manifest.webmanifest`;
 
   const handleCopyManifest = async () => {
     try {
       await navigator.clipboard.writeText(manifestUrl);
       setCopiedManifest(true);
       setTimeout(() => setCopiedManifest(false), 2000);
+    } catch {
+      // Ignore clipboard failures on restricted contexts
+    }
+  };
+
+  const handleCopySite = async () => {
+    try {
+      await navigator.clipboard.writeText(siteUrl);
+      setCopiedSite(true);
+      setTimeout(() => setCopiedSite(false), 2000);
     } catch {
       // Ignore clipboard failures on restricted contexts
     }
@@ -107,18 +117,28 @@ export const PWAInstallModal: React.FC<PWAInstallModalProps> = ({ open, onClose 
             <div className="flex items-center gap-3 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900">
               <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
               <div className="text-xs leading-relaxed">
-                <div className="font-semibold">Standalone App Mode Active</div>
+                <div className="font-semibold">
+                  {language === 'hi' ? 'ऐप मोड सक्रिय है' : 'Standalone App Mode Active'}
+                </div>
                 <div>
-                  Editing Hub is already running as an installed standalone app on this device.
+                  {language === 'hi'
+                    ? 'Editing Hub पहले से इस डिवाइस पर स्टैंडअलोन ऐप के रूप में चल रहा है।'
+                    : 'Editing Hub is already running as an installed standalone app on this device.'}
                 </div>
               </div>
             </div>
           ) : isInstallable ? (
             <div className="p-4 rounded-xl bg-violet-50 border border-violet-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="text-xs text-slate-700">
-                <div className="font-semibold text-slate-900">Ready for 1-Tap Android / Desktop Install</div>
+                <div className="font-semibold text-slate-900">
+                  {language === 'hi'
+                    ? '1-टैप में Android / Desktop ऐप इंस्टॉल करें'
+                    : 'Ready for 1-Tap Android / Desktop Install'}
+                </div>
                 <div className="mt-0.5">
-                  Installs as a full-screen standalone WebAPK with home icon and offline cache.
+                  {language === 'hi'
+                    ? 'बिना ब्राउज़र बार के फुल-स्क्रीन WebAPK और होम स्क्रीन आइकन के साथ इंस्टॉल करें।'
+                    : 'Installs as a full-screen standalone WebAPK with home icon and offline cache.'}
                 </div>
               </div>
               <button
@@ -136,22 +156,43 @@ export const PWAInstallModal: React.FC<PWAInstallModalProps> = ({ open, onClose 
           <div className="rounded-xl border border-slate-200 p-4 space-y-2.5">
             <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
               <Smartphone className="w-4 h-4 text-violet-600" />
-              <span>Android (Chrome WebAPK Standalone Mode)</span>
+              <span>
+                {language === 'hi'
+                  ? 'Android पर सीधा ऐप इंस्टॉल करें (Chrome WebAPK)'
+                  : 'Android (Chrome WebAPK Standalone Mode)'}
+              </span>
             </div>
-            <ol className="text-xs text-slate-600 space-y-1.5 list-decimal list-inside leading-relaxed">
-              <li>
-                Open this app link directly in <strong>Google Chrome</strong> on your Android phone
-                (outside an embedded preview frame).
-              </li>
-              <li>
-                Tap the <strong>⋮ Menu</strong> in Chrome’s top-right corner and choose{' '}
-                <strong>Install app</strong> (or <strong>Add to Home screen</strong>).
-              </li>
-              <li>
-                Android automatically packages a signed <strong>WebAPK</strong> on your home screen
-                with zero browser bars and offline asset caching.
-              </li>
-            </ol>
+            {language === 'hi' ? (
+              <ol className="text-xs text-slate-600 space-y-1.5 list-decimal list-inside leading-relaxed">
+                <li>
+                  अपने Android फोन के <strong>Google Chrome</strong> में पब्लिक Shared App लिंक
+                  खोलें।
+                </li>
+                <li>
+                  ऊपर दाईं ओर <strong>⋮ मेनू</strong> पर टैप करें और{' '}
+                  <strong>Install app</strong> (या <strong>Add to Home screen</strong>) चुनें।
+                </li>
+                <li>
+                  Android अपने आप होम स्क्रीन पर असली <strong>Editing Hub WebAPK</strong> इंस्टॉल
+                  कर देगा।
+                </li>
+              </ol>
+            ) : (
+              <ol className="text-xs text-slate-600 space-y-1.5 list-decimal list-inside leading-relaxed">
+                <li>
+                  Open the Shared App link directly in <strong>Google Chrome</strong> on your
+                  Android phone (outside an embedded preview frame).
+                </li>
+                <li>
+                  Tap the <strong>⋮ Menu</strong> in Chrome’s top-right corner and choose{' '}
+                  <strong>Install app</strong> (or <strong>Add to Home screen</strong>).
+                </li>
+                <li>
+                  Android automatically packages a signed <strong>WebAPK</strong> on your home
+                  screen with zero browser bars and offline asset caching.
+                </li>
+              </ol>
+            )}
           </div>
 
           {/* iOS Safari Instructions */}
@@ -179,50 +220,93 @@ export const PWAInstallModal: React.FC<PWAInstallModalProps> = ({ open, onClose 
           <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 space-y-3">
             <div className="flex items-center justify-between gap-2">
               <span className="text-xs font-semibold text-slate-900">
-                Export Distributable Android .apk File (PWABuilder / Bubblewrap)
+                {language === 'hi'
+                  ? 'अलग .apk फाइल डाउनलोड करें (PWABuilder / Bubblewrap)'
+                  : 'Download Distributable Android .apk File (PWABuilder / Bubblewrap)'}
               </span>
               <a
                 href="https://www.pwabuilder.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-xs font-medium text-violet-700 hover:text-violet-800 whitespace-nowrap"
+                className="inline-flex items-center gap-1 text-xs font-semibold text-violet-700 hover:text-violet-800 whitespace-nowrap"
               >
-                <span>PWABuilder</span>
+                <span>Open PWABuilder</span>
                 <ExternalLink className="w-3 h-3" />
               </a>
             </div>
             <p className="text-xs text-slate-600 leading-relaxed">
-              To download a standalone <code className="font-mono text-slate-800">.apk</code>{' '}
-              installer for sideloading or Google Play, paste your live Editing Hub URL into{' '}
-              <strong>PWABuilder.com</strong> or run{' '}
-              <code className="font-mono text-slate-800">npx @bubblewrap/cli init</code> with your
-              Web Manifest URL:
+              {language === 'hi' ? (
+                <>
+                  अलग <code className="font-mono text-slate-800">.apk</code> फाइल बनाने के लिए नीचे
+                  दिया App URL कॉपी करें और <strong>PWABuilder.com</strong> में पेस्ट करके{' '}
+                  <strong>Package for Stores → Android → Download</strong> चुनें (ध्यान दें: इस
+                  वेब सैंडबॉक्स में Android SDK न होने से डायरेक्ट .apk यहीं कम्पाइल नहीं हो सकता):
+                </>
+              ) : (
+                <>
+                  To generate a downloadable{' '}
+                  <code className="font-mono text-slate-800">.apk</code> installer for sideloading
+                  or Google Play, copy your live App URL below, open{' '}
+                  <strong>PWABuilder.com</strong>, and choose{' '}
+                  <strong>Package for Stores → Android</strong> (or run{' '}
+                  <code className="font-mono text-slate-800">npx @bubblewrap/cli init</code> on a
+                  machine with JDK &amp; Android SDK):
+                </>
+              )}
             </p>
-            <div className="flex items-center gap-2">
-              <input
-                type="text"
-                readOnly
-                value={manifestUrl}
-                aria-label="Web App Manifest URL"
-                className="flex-1 min-w-0 px-3 py-2 text-xs font-mono bg-white border border-slate-200 rounded-lg text-slate-700"
-              />
-              <button
-                type="button"
-                onClick={handleCopyManifest}
-                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-xs font-medium text-slate-700 whitespace-nowrap shrink-0"
-              >
-                {copiedManifest ? (
-                  <>
-                    <Check className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>Copied</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-3.5 h-3.5" />
-                    <span>Copy URL</span>
-                  </>
-                )}
-              </button>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  readOnly
+                  value={siteUrl}
+                  aria-label="Live App URL"
+                  className="flex-1 min-w-0 px-3 py-2 text-xs font-mono bg-white border border-slate-200 rounded-lg text-slate-700"
+                />
+                <button
+                  type="button"
+                  onClick={handleCopySite}
+                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-xs font-medium text-slate-700 whitespace-nowrap shrink-0"
+                >
+                  {copiedSite ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Copied</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3.5 h-3.5" />
+                      <span>Copy App URL</span>
+                    </>
+                  )}
+                </button>
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  readOnly
+                  value={manifestUrl}
+                  aria-label="Web App Manifest URL"
+                  className="flex-1 min-w-0 px-3 py-2 text-xs font-mono bg-white border border-slate-200 rounded-lg text-slate-700"
+                />
+                <button
+                  type="button"
+                  onClick={handleCopyManifest}
+                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-xs font-medium text-slate-700 whitespace-nowrap shrink-0"
+                >
+                  {copiedManifest ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Copied</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3.5 h-3.5" />
+                      <span>Copy Manifest</span>
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </div>
