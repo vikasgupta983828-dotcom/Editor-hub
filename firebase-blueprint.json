@@ -1,0 +1,359 @@
+{
+  "entities": {
+    "AdminUser": {
+      "title": "AdminUser",
+      "description": "Trusted administrator marker document.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "maxLength": 160 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email", "createdAt"]
+    },
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Public marketplace profile for an Editor or Client (PII isolated in subcollection).",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "username": { "type": "string", "minLength": 2, "maxLength": 60 },
+        "displayName": { "type": "string", "minLength": 2, "maxLength": 80 },
+        "role": { "type": "string", "enum": ["editor", "client"] },
+        "country": { "type": "string", "minLength": 2, "maxLength": 60 },
+        "language": { "type": "string", "enum": ["en", "hi"] },
+        "preferredCurrency": { "type": "string", "enum": ["INR", "USD", "GBP", "EUR", "AED", "CAD", "AUD"] },
+        "avatarUrl": { "type": "string", "maxLength": 500 },
+        "bio": { "type": "string", "maxLength": 1200 },
+        "skills": { "type": "array", "description": "Up to 15 skill tags" },
+        "categories": { "type": "array", "description": "Up to 12 editing categories" },
+        "experienceYears": { "type": "number" },
+        "startingPriceUsd": { "type": "number" },
+        "verifiedByAdmin": { "type": "boolean" },
+        "isBlocked": { "type": "boolean" },
+        "isPublicProfile": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "uid",
+        "username",
+        "displayName",
+        "role",
+        "country",
+        "language",
+        "preferredCurrency",
+        "avatarUrl",
+        "bio",
+        "skills",
+        "categories",
+        "experienceYears",
+        "startingPriceUsd",
+        "verifiedByAdmin",
+        "isBlocked",
+        "isPublicProfile",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "UserPrivateInfo": {
+      "title": "UserPrivateInfo",
+      "description": "Strictly isolated PII and payout account details for a user.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "maxLength": 160 },
+        "phone": { "type": "string", "maxLength": 40 },
+        "payoutUpiId": { "type": "string", "maxLength": 100 },
+        "payoutPaypalEmail": { "type": "string", "maxLength": 160 },
+        "payoutBankSummary": { "type": "string", "maxLength": 200 },
+        "emailNotifications": { "type": "boolean" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email", "phone", "payoutUpiId", "payoutPaypalEmail", "payoutBankSummary", "emailNotifications", "updatedAt"]
+    },
+    "PortfolioItem": {
+      "title": "PortfolioItem",
+      "description": "Editor portfolio image or playable demo video showcase.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "editorId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "editorName": { "type": "string", "maxLength": 80 },
+        "title": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "category": { "type": "string", "minLength": 2, "maxLength": 60 },
+        "mediaType": { "type": "string", "enum": ["video", "image"] },
+        "mediaUrl": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "thumbnailUrl": { "type": "string", "maxLength": 500 },
+        "description": { "type": "string", "maxLength": 600 },
+        "durationSec": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "editorId", "editorName", "title", "category", "mediaType", "mediaUrl", "thumbnailUrl", "description", "durationSec", "createdAt"]
+    },
+    "Project": {
+      "title": "Project",
+      "description": "Client editing project with proposals, escrow payment, delivery, and completion states.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "clientId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "clientName": { "type": "string", "maxLength": 80 },
+        "clientCountry": { "type": "string", "maxLength": 60 },
+        "editorId": { "type": "string", "maxLength": 128 },
+        "editorName": { "type": "string", "maxLength": 80 },
+        "title": { "type": "string", "minLength": 3, "maxLength": 140 },
+        "category": { "type": "string", "minLength": 2, "maxLength": 60 },
+        "description": { "type": "string", "minLength": 10, "maxLength": 3000 },
+        "budgetUsd": { "type": "number" },
+        "originalBudget": { "type": "number" },
+        "originalCurrency": { "type": "string", "maxLength": 5 },
+        "deadline": { "type": "string", "maxLength": 30 },
+        "referenceUrl": { "type": "string", "maxLength": 500 },
+        "deliveryUrl": { "type": "string", "maxLength": 500 },
+        "deliveryNotes": { "type": "string", "maxLength": 1000 },
+        "revisionNotes": { "type": "string", "maxLength": 1000 },
+        "status": { "type": "string", "enum": ["pending", "active", "delivered", "revision_requested", "completed", "disputed", "cancelled"] },
+        "paymentStatus": { "type": "string", "enum": ["unpaid", "held_in_escrow", "released", "refunded", "disputed"] },
+        "paymentMethod": { "type": "string", "maxLength": 40 },
+        "reviewed": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "id", "clientId", "clientName", "clientCountry", "editorId", "editorName",
+        "title", "category", "description", "budgetUsd", "originalBudget", "originalCurrency",
+        "deadline", "referenceUrl", "deliveryUrl", "deliveryNotes", "revisionNotes",
+        "status", "paymentStatus", "paymentMethod", "reviewed", "createdAt", "updatedAt"
+      ]
+    },
+    "Proposal": {
+      "title": "Proposal",
+      "description": "Editor bid/proposal submitted on an open project.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "projectId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "projectClientId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "editorId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "editorName": { "type": "string", "maxLength": 80 },
+        "editorCountry": { "type": "string", "maxLength": 60 },
+        "proposedPriceUsd": { "type": "number" },
+        "deliveryDays": { "type": "number" },
+        "coverLetter": { "type": "string", "minLength": 5, "maxLength": 1500 },
+        "status": { "type": "string", "enum": ["pending", "accepted", "rejected"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "id", "projectId", "projectClientId", "editorId", "editorName",
+        "editorCountry", "proposedPriceUsd", "deliveryDays", "coverLetter",
+        "status", "createdAt", "updatedAt"
+      ]
+    },
+    "Review": {
+      "title": "Review",
+      "description": "Verified client rating and review for a completed project.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "projectId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "editorId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "clientId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "clientName": { "type": "string", "maxLength": 80 },
+        "rating": { "type": "number" },
+        "comment": { "type": "string", "minLength": 2, "maxLength": 1000 },
+        "category": { "type": "string", "maxLength": 60 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "projectId", "editorId", "clientId", "clientName", "rating", "comment", "category", "createdAt"]
+    },
+    "Conversation": {
+      "title": "Conversation",
+      "description": "Direct messaging thread between a client and an editor.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 260, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "participantA": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "participantB": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "participantAName": { "type": "string", "maxLength": 80 },
+        "participantBName": { "type": "string", "maxLength": 80 },
+        "participantAAvatar": { "type": "string", "maxLength": 500 },
+        "participantBAvatar": { "type": "string", "maxLength": 500 },
+        "projectId": { "type": "string", "maxLength": 128 },
+        "projectTitle": { "type": "string", "maxLength": 140 },
+        "lastMessage": { "type": "string", "maxLength": 300 },
+        "lastMessageAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "id", "participantA", "participantB", "participantAName", "participantBName",
+        "participantAAvatar", "participantBAvatar", "projectId", "projectTitle",
+        "lastMessage", "lastMessageAt", "createdAt"
+      ]
+    },
+    "ChatMessage": {
+      "title": "ChatMessage",
+      "description": "Message inside a conversation with optional image, video, or project file attachment.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "conversationId": { "type": "string", "maxLength": 260, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "senderId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "senderName": { "type": "string", "maxLength": 80 },
+        "text": { "type": "string", "maxLength": 2000 },
+        "attachmentUrl": { "type": "string", "maxLength": 500 },
+        "attachmentName": { "type": "string", "maxLength": 140 },
+        "attachmentType": { "type": "string", "enum": ["none", "image", "video", "file"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "conversationId", "senderId", "senderName", "text", "attachmentUrl", "attachmentName", "attachmentType", "createdAt"]
+    },
+    "Transaction": {
+      "title": "Transaction",
+      "description": "Escrow payment, editor payout, or refund record.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "projectId": { "type": "string", "maxLength": 128 },
+        "projectTitle": { "type": "string", "maxLength": 140 },
+        "clientId": { "type": "string", "maxLength": 128 },
+        "editorId": { "type": "string", "maxLength": 128 },
+        "type": { "type": "string", "enum": ["escrow_payment", "editor_payout", "refund"] },
+        "gateway": { "type": "string", "enum": ["UPI", "Stripe", "PayPal", "PlatformPayout"] },
+        "grossAmountUsd": { "type": "number" },
+        "commissionPct": { "type": "number" },
+        "commissionAmountUsd": { "type": "number" },
+        "netAmountUsd": { "type": "number" },
+        "displayCurrency": { "type": "string", "maxLength": 5 },
+        "displayAmount": { "type": "number" },
+        "status": { "type": "string", "enum": ["held_in_escrow", "completed", "refunded", "disputed"] },
+        "referenceCode": { "type": "string", "maxLength": 100 },
+        "country": { "type": "string", "maxLength": 60 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "id", "projectId", "projectTitle", "clientId", "editorId", "type", "gateway",
+        "grossAmountUsd", "commissionPct", "commissionAmountUsd", "netAmountUsd",
+        "displayCurrency", "displayAmount", "status", "referenceCode", "country",
+        "createdAt", "updatedAt"
+      ]
+    },
+    "Dispute": {
+      "title": "Dispute",
+      "description": "Complaint or payment dispute between client and editor.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "projectId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "projectTitle": { "type": "string", "maxLength": 140 },
+        "openedBy": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "openedByName": { "type": "string", "maxLength": 80 },
+        "clientId": { "type": "string", "maxLength": 128 },
+        "editorId": { "type": "string", "maxLength": 128 },
+        "reason": { "type": "string", "minLength": 5, "maxLength": 1200 },
+        "status": { "type": "string", "enum": ["open", "resolved_refund", "resolved_release", "dismissed"] },
+        "adminNote": { "type": "string", "maxLength": 1000 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "projectId", "projectTitle", "openedBy", "openedByName", "clientId", "editorId", "reason", "status", "adminNote", "createdAt", "updatedAt"]
+    },
+    "FavoriteEditor": {
+      "title": "FavoriteEditor",
+      "description": "Client bookmark for a favourite editor.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 260, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "clientId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "editorId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "clientId", "editorId", "createdAt"]
+    },
+    "UserNotification": {
+      "title": "UserNotification",
+      "description": "In-app notification for messages, proposals, deliveries, and payments.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "userId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "senderId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "title": { "type": "string", "minLength": 1, "maxLength": 140 },
+        "body": { "type": "string", "minLength": 1, "maxLength": 400 },
+        "linkView": { "type": "string", "maxLength": 60 },
+        "read": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "senderId", "title", "body", "linkView", "read", "createdAt"]
+    },
+    "PlatformConfig": {
+      "title": "PlatformConfig",
+      "description": "Platform-wide commission rate and active editing categories.",
+      "type": "object",
+      "properties": {
+        "commissionRatePct": { "type": "number" },
+        "activeCategories": { "type": "array" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["commissionRatePct", "activeCategories", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/admins/{uid}": {
+      "schema": { "$ref": "#/entities/AdminUser" },
+      "description": "Admin role directory"
+    },
+    "/users/{uid}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Public editor and client marketplace profiles"
+    },
+    "/users/{uid}/private/info": {
+      "schema": { "$ref": "#/entities/UserPrivateInfo" },
+      "description": "Private PII and payout details isolated per user"
+    },
+    "/portfolioItems/{itemId}": {
+      "schema": { "$ref": "#/entities/PortfolioItem" },
+      "description": "Editor portfolio images and demo videos"
+    },
+    "/projects/{projectId}": {
+      "schema": { "$ref": "#/entities/Project" },
+      "description": "Client editing projects and workflow state"
+    },
+    "/projects/{projectId}/proposals/{proposalId}": {
+      "schema": { "$ref": "#/entities/Proposal" },
+      "description": "Editor proposals submitted to a specific project"
+    },
+    "/reviews/{reviewId}": {
+      "schema": { "$ref": "#/entities/Review" },
+      "description": "Client reviews and ratings on completed projects"
+    },
+    "/conversations/{conversationId}": {
+      "schema": { "$ref": "#/entities/Conversation" },
+      "description": "Real-time 1:1 messaging conversations"
+    },
+    "/conversations/{conversationId}/messages/{messageId}": {
+      "schema": { "$ref": "#/entities/ChatMessage" },
+      "description": "Messages and shared files within a conversation"
+    },
+    "/transactions/{txId}": {
+      "schema": { "$ref": "#/entities/Transaction" },
+      "description": "Escrow payments, payouts, and refunds"
+    },
+    "/disputes/{disputeId}": {
+      "schema": { "$ref": "#/entities/Dispute" },
+      "description": "Project disputes and admin resolutions"
+    },
+    "/favorites/{favoriteId}": {
+      "schema": { "$ref": "#/entities/FavoriteEditor" },
+      "description": "Saved favourite editors per client"
+    },
+    "/notifications/{notificationId}": {
+      "schema": { "$ref": "#/entities/UserNotification" },
+      "description": "Real-time notifications for users"
+    },
+    "/platformConfig/{configId}": {
+      "schema": { "$ref": "#/entities/PlatformConfig" },
+      "description": "Global platform commission and category configuration"
+    }
+  }
+}

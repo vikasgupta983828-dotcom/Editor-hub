@@ -1,0 +1,6 @@
+{
+  "name": "EDITOR HUB PRO",
+  "description": "CREATE. CONNECT. EARN. WORLDWIDE. Global freelancing marketplace connecting video editors, graphic designers, logo designers, thumbnail designers, and motion graphics artists with clients worldwide.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
